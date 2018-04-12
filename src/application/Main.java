@@ -98,9 +98,7 @@ public class Main extends Application {
 		// List and maps of buttons, gridpanes and value of the board
 		untouched = new ArrayList<Integer>(board);
 		boardText = new HashMap<Integer, Button>();
-		grid = new HashMap<Integer, GridPane>();      
-		
-		set 
+		grid = new HashMap<Integer, GridPane>();
 	}
 
 	private int getNum(int num) {
