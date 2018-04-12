@@ -19,7 +19,7 @@ public class Sudoku {
 	}
 	
 	public void generatePlayer() {
-		generatePlayer(79);		
+		generatePlayer(generateRandom(40,20));		
 	}
 	
 	public void start() {
