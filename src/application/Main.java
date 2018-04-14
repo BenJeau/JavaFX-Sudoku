@@ -142,7 +142,6 @@ public class Main extends Application {
 									boardText.get(pos).setText("0");
 									board.set(pos, 0);
 									boardText.get(pos).setId("helperZero");
-									setLegend();
 								} else {
 									boardText.get(pos).setText(String.valueOf(value));
 									boardText.get(pos).setId("");
@@ -150,10 +149,12 @@ public class Main extends Application {
 								}
 
 								for (int l = 0; l < 81; l++) {
-									if ((boardText.get(l).getText()).equals(String.valueOf(value))) {
+									if (!boardText.get(l).getId().equals("number") && boardText.get(l).getText().equals(String.valueOf(value))) {
 										boardText.get(l).setId("number");
-									}
+									} 
 								}
+
+								setLegend();
 							}
 
 							if (sudoku.checkBoard(board)) {
@@ -191,6 +192,7 @@ public class Main extends Application {
 									scene.setCursor(Cursor.HAND);
 								}
 							}
+							System.out.println("111111111");
 						}
 					});
 
@@ -198,6 +200,7 @@ public class Main extends Application {
 						@Override
 						public void handle(Event arg0) {
 							if (!sudoku.checkBoard(board) && value != 0) {
+								System.out.println("2222222");
 								changeHorizontalIds(new String[] { "preset", "", "zero", "number" }, pos / 9);
 								changeVerticalIds(new String[] { "preset", "", "zero", "number" }, pos % 9);
 
@@ -213,17 +216,24 @@ public class Main extends Application {
 			table.add(grid.get(i), i % 3, i / 3);
 		}
 	}
-	
+
 	private void setLegend() {
-		for (int i = 1; i < 10; i ++) {
-		if (getNum(i) >= 9) {
-			numButtons.get(i - 1).setId("legendFull");
-		}
+		for (int i = 1; i < 10; i++) {
+			if (getNum(i) >= 9) {
+				if (!numButtons.get(i - 1).getId().equals("legendFull")) {
+					numButtons.get(i - 1).setId("legendFull");	
+				}
+			} else if (i != value) {
+				numButtons.get(i - 1).setId("");				
+			} else {
+				numButtons.get(i - 1).setId("legend");				
+			}
 		}
 	}
 	
 	long countDown = 0;
 
+	@SuppressWarnings("unchecked")
 	private void startTimer() {
 		start = Calendar.getInstance().getTime();
 		timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler() {
@@ -265,6 +275,8 @@ public class Main extends Application {
 					boardText.get(i).setId("zero");
 				}
 			}
+			
+			setLegend();
 		});
 		newGame = new Button("New Game");
 		newGame.setOnAction(e -> {
@@ -277,6 +289,7 @@ public class Main extends Application {
 			reset();
 			generateBoard();
 			startTimer();
+			setLegend();
 		});
 		startTimer();
 
