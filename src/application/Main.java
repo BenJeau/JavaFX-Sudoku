@@ -44,7 +44,7 @@ public class Main extends Application {
 	private HBox hbox;
 	private Button clear, newGame;
 	private GridPane num;
-	
+
 	private Date start;
 	private Timeline timeline;
 
@@ -184,15 +184,16 @@ public class Main extends Application {
 								}
 
 								for (int l = 0; l < 81; l++) {
-									if (!boardText.get(l).getId().equals("number") && 
-											boardText.get(l).getText().equals(String.valueOf(value))) {
+									if (!boardText.get(l).getId().equals("number")
+											&& boardText.get(l).getText().equals(String.valueOf(value))) {
 										boardText.get(l).setId("number");
-									} 
+									}
 								}
 
 								setLegend();
 							}
 
+							// Checks if the game is done
 							if (sudoku.checkBoard(board)) {
 								timeline.stop();
 
@@ -232,7 +233,6 @@ public class Main extends Application {
 						if (!sudoku.checkBoard(board) && value != 0) {
 							changeHorizontalIds(new String[] { "preset", "", "zero", "number" }, pos / 9);
 							changeVerticalIds(new String[] { "preset", "", "zero", "number" }, pos % 9);
-
 							scene.setCursor(Cursor.DEFAULT);
 						}
 					});
@@ -245,49 +245,47 @@ public class Main extends Application {
 		}
 	}
 
+	/**
+	 * Sets up the legend state by checking if any of the number has nine or more
+	 * appearance in the player's Sudoku board
+	 */
 	private void setLegend() {
 		for (int i = 1; i < 10; i++) {
 			if (getNum(i) >= 9) {
 				if (!numButtons.get(i - 1).getId().equals("legendFull")) {
-					numButtons.get(i - 1).setId("legendFull");	
+					numButtons.get(i - 1).setId("legendFull");
 				}
 			} else if (i != value) {
-				numButtons.get(i - 1).setId("");				
+				numButtons.get(i - 1).setId("");
 			} else {
-				numButtons.get(i - 1).setId("legend");				
+				numButtons.get(i - 1).setId("legend");
 			}
 		}
 	}
 
+	/**
+	 * Counts the time elapsed in seconds from the start of the game, from 0 to
+	 * infinite and display that number in the title bard
+	 */
 	private void startTimer() {
 		start = Calendar.getInstance().getTime();
-		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e->{{
-				countDown = Calendar.getInstance().getTime().getTime() - start.getTime();
-				stage.setTitle("Sudoku - Time: "
-						+ String.valueOf(TimeUnit.SECONDS.convert(countDown, TimeUnit.MILLISECONDS)));
-			}
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+			countDown = Calendar.getInstance().getTime().getTime() - start.getTime();
+			stage.setTitle(
+					"Sudoku - Time: " + String.valueOf(TimeUnit.SECONDS.convert(countDown, TimeUnit.MILLISECONDS)));
 		}));
 
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage) {
-
+		// Creates a reference to the primaryStage to be
+		// able to manipulate it in other methods
 		stage = primaryStage;
 
-		// Panels
-		root = new BorderPane();
-		table = new GridPane();
-		hbox = new HBox();
-		num = new GridPane();
-
-		// Scenes
-		scene = new Scene(root, 350, 450);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-
-		// Buttons
+		// Clear button
 		clear = new Button("Clear");
 		clear.setOnAction(e -> {
 			board = new ArrayList<Integer>(untouched);
@@ -297,9 +295,11 @@ public class Main extends Application {
 					boardText.get(i).setId("zero");
 				}
 			}
-			
+
 			setLegend();
 		});
+
+		// New game button
 		newGame = new Button("New Game");
 		newGame.setOnAction(e -> {
 			if (value != 0) {
@@ -313,32 +313,41 @@ public class Main extends Application {
 			startTimer();
 			setLegend();
 		});
+
+		// Starts the timer
 		startTimer();
 
-		// Panels setup
+		// Layout of the board
+		table = new GridPane();
 		table.setVgap(8);
 		table.setHgap(8);
 		table.setAlignment(Pos.CENTER);
 
+		// Layout of the nine numbers at the bottom (legend)
+		num = new GridPane();
 		num.setHgap(2);
 		num.setPadding(new Insets(0, 0, 16, 0));
 		num.setAlignment(Pos.CENTER);
 
+		// Layout of the top two buttons
+		hbox = new HBox();
 		hbox.setSpacing(10);
 		hbox.setPadding(new Insets(16, 0, 0, 0));
 		hbox.setAlignment(Pos.CENTER);
 		hbox.getChildren().addAll(newGame, clear);
 
+		// Main layout of the Game
+		root = new BorderPane();
 		root.setTop(hbox);
 		root.setCenter(table);
 		root.setBottom(num);
 
-		// Generate Sudoku board
+		// Generates the Sudoku board
 		sudoku = new Sudoku();
 		sudoku.generateBoard();
 		sudoku.generatePlayer();
 
-		// Print out the solution
+		// Prints out the solution
 		System.out.println(sudoku.toString());
 
 		// Application icon
@@ -348,14 +357,16 @@ public class Main extends Application {
 		// Get player's board
 		board = sudoku.getPlayer();
 
-		// List and maps of buttons, gridpanes and value of the board
+		// List and maps of buttons, GridPanes and value of the board
 		untouched = new ArrayList<Integer>(board);
 		boardText = new HashMap<Integer, Button>();
 		grid = new HashMap<Integer, GridPane>();
 		numButtons = new HashMap<Integer, Button>();
 
+		// Generates the GUI for the board
 		generateBoard();
 
+		// Sets up the legend (nine numbers at the bottom)
 		for (int i = 0; i < 9; i++) {
 			numButtons.put(i, new Button());
 			numButtons.get(i).setText(String.valueOf(i + 1));
@@ -415,9 +426,16 @@ public class Main extends Application {
 				scene.setCursor(Cursor.DEFAULT);
 			});
 		}
-		
+
+		// Sets up the state of the legend (nine numbers at the bottom) according to the
+		// player's Sudoku board
 		setLegend();
 
+		// Sets the scene to the BorderPane layout and links the CSS file
+		scene = new Scene(root, 350, 450);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+		// Sets the stage, sets its title, displays it, and restricts its minimal size
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Sudoku - Time: 0");
 		primaryStage.show();
