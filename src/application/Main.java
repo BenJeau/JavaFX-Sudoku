@@ -6,14 +6,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -22,7 +19,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -47,11 +43,11 @@ public class Main extends Application {
 	private HBox hbox;
 	private Button clear, newGame;
 	private GridPane num;
-
-	private Label time;
-
+	
 	private Date start;
 	private Timeline timeline;
+
+	private Stage stage;
 
 	private void changeHorizontalIds(String[] array, int start) {
 		for (int i = start * 9; i < start * 9 + 9; i++) {
@@ -80,11 +76,11 @@ public class Main extends Application {
 	}
 
 	private void reset() {
-
 		for (int i = 0; i < 9; i++) {
 			table.getChildren().remove(grid.get(i));
 		}
 
+		// 
 		sudoku.clear();
 		sudoku.generateBoard();
 		sudoku.generatePlayer();
@@ -111,7 +107,6 @@ public class Main extends Application {
 		return count;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void generateBoard() {
 		// Each block
 		for (int i = 0; i < 9; i++) {
@@ -149,7 +144,8 @@ public class Main extends Application {
 								}
 
 								for (int l = 0; l < 81; l++) {
-									if (!boardText.get(l).getId().equals("number") && boardText.get(l).getText().equals(String.valueOf(value))) {
+									if (!boardText.get(l).getId().equals("number") && 
+											boardText.get(l).getText().equals(String.valueOf(value))) {
 										boardText.get(l).setId("number");
 									} 
 								}
@@ -180,32 +176,24 @@ public class Main extends Application {
 						boardText.get(pos).setId("preset");
 					}
 
-					boardText.get(pos).setOnMouseEntered(new EventHandler() {
-						@Override
-						public void handle(Event arg0) {
-							if (!sudoku.checkBoard(board) && value != 0) {
-								changeHorizontalIds(new String[] { "helper", "helper", "helperZero", "numberHelper" },
-										pos / 9);
-								changeVerticalIds(new String[] { "helper", "helper", "helperZero", "numberHelper" },
-										pos % 9);
-								if (board.get(pos) == 0) {
-									scene.setCursor(Cursor.HAND);
-								}
+					boardText.get(pos).setOnMouseEntered(e -> {
+						if (!sudoku.checkBoard(board) && value != 0) {
+							changeHorizontalIds(new String[] { "helper", "helper", "helperZero", "numberHelper" },
+									pos / 9);
+							changeVerticalIds(new String[] { "helper", "helper", "helperZero", "numberHelper" },
+									pos % 9);
+							if (board.get(pos) == 0) {
+								scene.setCursor(Cursor.HAND);
 							}
-							System.out.println("111111111");
 						}
 					});
 
-					boardText.get(pos).setOnMouseExited(new EventHandler() {
-						@Override
-						public void handle(Event arg0) {
-							if (!sudoku.checkBoard(board) && value != 0) {
-								System.out.println("2222222");
-								changeHorizontalIds(new String[] { "preset", "", "zero", "number" }, pos / 9);
-								changeVerticalIds(new String[] { "preset", "", "zero", "number" }, pos % 9);
+					boardText.get(pos).setOnMouseExited(e -> {
+						if (!sudoku.checkBoard(board) && value != 0) {
+							changeHorizontalIds(new String[] { "preset", "", "zero", "number" }, pos / 9);
+							changeVerticalIds(new String[] { "preset", "", "zero", "number" }, pos % 9);
 
-								scene.setCursor(Cursor.DEFAULT);
-							}
+							scene.setCursor(Cursor.DEFAULT);
 						}
 					});
 
@@ -233,12 +221,9 @@ public class Main extends Application {
 	
 	long countDown = 0;
 
-	@SuppressWarnings("unchecked")
 	private void startTimer() {
 		start = Calendar.getInstance().getTime();
-		timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler() {
-			@Override
-			public void handle(Event arg0) {
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e->{{
 				countDown = Calendar.getInstance().getTime().getTime() - start.getTime();
 				stage.setTitle("Sudoku - Time: "
 						+ String.valueOf(TimeUnit.SECONDS.convert(countDown, TimeUnit.MILLISECONDS)));
@@ -248,8 +233,7 @@ public class Main extends Application {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public void start(Stage primaryStage) {
 
@@ -386,18 +370,12 @@ public class Main extends Application {
 				}
 			});
 
-			numButtons.get(i).setOnMouseEntered(new EventHandler() {
-				@Override
-				public void handle(Event arg0) {
-					scene.setCursor(Cursor.HAND);
-				}
+			numButtons.get(i).setOnMouseEntered(e -> {
+				scene.setCursor(Cursor.HAND);
 			});
 
-			numButtons.get(i).setOnMouseExited(new EventHandler() {
-				@Override
-				public void handle(Event arg0) {
-					scene.setCursor(Cursor.DEFAULT);
-				}
+			numButtons.get(i).setOnMouseExited(e -> {
+				scene.setCursor(Cursor.DEFAULT);
 			});
 		}
 		
@@ -409,8 +387,6 @@ public class Main extends Application {
 		primaryStage.setMinHeight(primaryStage.getHeight());
 		primaryStage.setMinWidth(primaryStage.getWidth());
 	}
-
-	private Stage stage;
 
 	public static void main(String[] args) {
 		launch(args);
