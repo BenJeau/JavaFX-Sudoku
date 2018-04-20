@@ -8,68 +8,118 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * The class <b>Sudoku</b> builds playable Sudoku game board using a
+ * backtracking recursive algorithm. It possess many useful methods for the
+ * manipulation of that board. You can also play the game in the command
+ * line/terminal by calling the method start(), but I mostly focused on an GUI
+ * integration of this game in the Main class.
+ * 
+ * @author Benoît
+ *
+ */
 public class Sudoku {
 
+	/**
+	 * Keeps track of the value already tried at the specified location in the board
+	 * when creating the board, useful for the backtracking algorithm
+	 */
 	private ArrayList<ArrayList<Integer>> previous;
+
+	/**
+	 * Uncovered Sudoku board
+	 */
 	private ArrayList<Integer> board;
+
+	/**
+	 * Semi-uncovered Sudoku board
+	 */
 	private ArrayList<Integer> player;
 
+	/**
+	 * Constructor for Sudoku
+	 */
 	public Sudoku() {
 		clear();
 	}
-	
+
+	/**
+	 * Creates a board with only 20 to 40 elements uncovered
+	 */
 	public void generatePlayer() {
-		generatePlayer(generateRandom(40,20));		
+		generatePlayer(generateRandom(40, 20));
 	}
-	
+
+	/**
+	 * Command line Sudoku game
+	 */
 	public void start() {
 		generateBoard();
 		generatePlayer();
-		
+
 		System.out.println(toString());
-		
-		while(!checkBoard(player)) {
+		Scanner sc = new Scanner(System.in);
+
+		while (!checkBoard(player)) {
 			System.out.println(printBoard(player));
 
-			Scanner sc = new Scanner(System.in);
 			System.out.println("\nPlease enter the row of the number");
 			int row = sc.nextInt();
 			System.out.println("Please enter the column of the number");
 			int col = sc.nextInt();
 			System.out.println("What is the value?");
 			int value = sc.nextInt();
-			
-			
-			while(value <= 0 || value > 9) {
+
+			while (value <= 0 || value > 9) {
 				System.out.println("Invalid value");
 				System.out.println("What is the value?");
 				value = sc.nextInt();
 			}
-			
-			addNumber(value, (row - 1) * 9 + col - 1);
-			
+
+			player.set(value, (row - 1) * 9 + col - 1);
 		}
-		
+
+		sc.close();
+
 		System.out.println("Sudoku solved!");
 	}
-	
+
+	/**
+	 * Getter method for the player's Sudoku board
+	 * 
+	 * @return an ArrayList containing the player's Sudoku board
+	 */
 	public ArrayList<Integer> getPlayer() {
 		return player;
 	}
 
+	/**
+	 * Generates the player's board by putting the number of elements specified
+	 * 
+	 * @param num
+	 */
 	public void generatePlayer(int num) {
 		for (int i = 0; i < num; i++) {
 			ArrayList<Integer> zerosIndex = getIndexes(player, 0);
 			int rand = generateRandom(zerosIndex.size() - 1, 0);
-			
+
 			player.set(zerosIndex.get(rand), board.get(zerosIndex.get(rand)));
 		}
 	}
-	
+
+	/**
+	 * Generates the board by calling the recursive method generateBoard(int num)
+	 */
 	public void generateBoard() {
 		generateBoard(0);
 	}
-	
+
+	/**
+	 * Recursive method generating the Sudoku using a backtracking algorithm
+	 * 
+	 * @param num
+	 *            the index of the current element in board
+	 */
 	private void generateBoard(int num) {
 		if (!fullBoard() && !checkBoard(board)) {
 			ArrayList<Integer> available = complement(
@@ -89,6 +139,27 @@ public class Sudoku {
 		}
 	}
 
+	/**
+	 * Returns an ArrayList containing the every number in the specified block in
+	 * the board
+	 * 
+	 * Visual representation of the Sudoku board (numbers represents the block
+	 * number)
+	 * 
+	 * <pre>
+	 * 0 | 1 | 2
+	 * ---------
+	 * 3 | 4 | 5
+	 * ---------
+	 * 6 | 7 | 8
+	 * </pre>
+	 * 
+	 * @param num
+	 *            the block number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return an ArrayList with the elements of the block
+	 */
 	private ArrayList<Integer> getBlock(int num, ArrayList<Integer> list) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 
@@ -101,6 +172,16 @@ public class Sudoku {
 		return removeZeros(temp);
 	}
 
+	/**
+	 * Returns an ArrayList containing the every number in the specified vertical
+	 * line in the board (the most left one is 0 and the most right one is 8)
+	 * 
+	 * @param num
+	 *            the vertical line number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return an ArrayList with the elements of the vertical line
+	 */
 	private ArrayList<Integer> getVerticalLine(int num, ArrayList<Integer> list) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 
@@ -111,30 +192,91 @@ public class Sudoku {
 		return removeZeros(temp);
 	}
 
+	/**
+	 * Returns an ArrayList containing the every number in the specified horizontal
+	 * line in the board (the top one is 0 and the bottom is 8)
+	 * 
+	 * @param num
+	 *            the horizontal line number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return an ArrayList with the elements of the horizontal line
+	 */
 	private ArrayList<Integer> getHorizontalLine(int num, ArrayList<Integer> list) {
 		return removeZeros(new ArrayList<Integer>(list.subList(num * 9, num * 9 + 9)));
 	}
 
+	/**
+	 * Checks if the block if full and valid (no duplicate numbers)
+	 * 
+	 * Visual representation of the Sudoku board (numbers represents the block
+	 * number)
+	 * 
+	 * <pre>
+	 * 0 | 1 | 2
+	 * ---------
+	 * 3 | 4 | 5
+	 * ---------
+	 * 6 | 7 | 8
+	 * </pre>
+	 * 
+	 * @param num
+	 *            the block number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return true if the block is valid, false otherwise
+	 */
 	private boolean checkBlock(int num, ArrayList<Integer> list) {
 		return 9 == removeDuplicates(getBlock(num, list)).size();
 	}
 
+	/**
+	 * Checks if the vertical line if full and valid (no duplicate numbers)
+	 * 
+	 * @param num
+	 *            the vertical line number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return true if the vertical line is valid, false otherwise
+	 */
 	private boolean checkVerticalLine(int num, ArrayList<Integer> list) {
 		return 9 == removeDuplicates(getVerticalLine(num, list)).size();
 	}
 
+	/**
+	 * Checks if the horizontal line if full and valid (no duplicate numbers)
+	 * 
+	 * @param num
+	 *            the horizontal line number
+	 * @param list
+	 *            an ArrayList containing the Sudoku board
+	 * @return true if the horizontal line is valid, false otherwise
+	 */
 	private boolean checkHorizontalLine(int num, ArrayList<Integer> list) {
 		return 9 == removeDuplicates(getHorizontalLine(num, list)).size();
 	}
 
+	/**
+	 * Checks if the board is full, does not have any zero
+	 * 
+	 * @return true if the board is full, false otherwise
+	 */
 	private boolean fullBoard() {
 		return !board.contains(0);
 	}
 
+	/**
+	 * Checks if the board conforms to the Sudoku rules
+	 * 
+	 * @param list
+	 *            an ArrayList representing the Sudoku board
+	 * @return true if the board is valid, false otherwise
+	 */
 	public boolean checkBoard(ArrayList<Integer> list) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
-				if (!(checkVerticalLine(col, list) || checkHorizontalLine(row, list) || checkBlock(row / 3 * 3 + col / 3, list))) {
+				if (!(checkVerticalLine(col, list) || checkHorizontalLine(row, list)
+						|| checkBlock(row / 3 * 3 + col / 3, list))) {
 					return false;
 				}
 			}
@@ -143,18 +285,36 @@ public class Sudoku {
 		return true;
 	}
 
+	/**
+	 * Returns an ArrayList containing every location of the value inside the
+	 * ArrayList
+	 * 
+	 * @param num
+	 *            an ArrayList representing the Sudoku board
+	 * @param value
+	 *            the searched number in the ArrayList
+	 * @return an ArrayList containing the index of the elements equal to value
+	 */
 	private ArrayList<Integer> getIndexes(ArrayList<Integer> num, Integer value) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
-		
+
 		for (int i = 0; i < num.size(); i++) {
 			if (value.equals(num.get(i))) {
 				temp.add(i);
 			}
 		}
-		
+
 		return temp;
 	}
-	
+
+	/**
+	 * Returns an ArrayList with the elements (from 1 to 9) that are not part of
+	 * parameter ArrayList
+	 * 
+	 * @param num
+	 *            an ArrayList containing elements from 1 to 9 inclusively
+	 * @return an ArrayList with those numbers
+	 */
 	private ArrayList<Integer> complement(ArrayList<Integer> num) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 
@@ -167,11 +327,29 @@ public class Sudoku {
 		return temp;
 	}
 
+	/**
+	 * Gets an ArrayList of the neighbours of the specified location (num) inside
+	 * the ArrayList
+	 * 
+	 * @param num
+	 *            the location of the element
+	 * @param list
+	 *            an ArrayList of the Sudoku board
+	 * @return an ArrayList with the neighbours of the location (without any
+	 *         duplicates)
+	 */
 	private ArrayList<Integer> getNeighbours(int num, ArrayList<Integer> list) {
 		return removeZeros(removeDuplicates(combineArrayList(Arrays.asList(getVerticalLine(num % 9, list),
 				getHorizontalLine(num / 9, list), getBlock((num / 9) / 3 * 3 + (num % 9) / 3, list)))));
 	}
 
+	/**
+	 * Combines every ArrayList in the List to a single ArrayList
+	 * 
+	 * @param list
+	 *            a List of ArrayList
+	 * @return an ArrayList containing every elements of the ArrayList in the List
+	 */
 	private ArrayList<Integer> combineArrayList(List<ArrayList<Integer>> list) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 
@@ -182,19 +360,32 @@ public class Sudoku {
 		return temp;
 	}
 
+	/**
+	 * Removes every zeros in the ArrayList
+	 * 
+	 * @param num
+	 *            an ArrayList containing zeros
+	 * @return an ArrayList without any zeros
+	 */
 	private ArrayList<Integer> removeZeros(ArrayList<Integer> num) {
 		num.removeAll(Collections.singleton(0));
 		return num;
 	}
 
+	/**
+	 * Removes the duplicate elements from an ArrayList
+	 * 
+	 * @param num
+	 *            an ArrayList containing duplicates elements
+	 * @return an ArrayList without duplicates elements
+	 */
 	private ArrayList<Integer> removeDuplicates(ArrayList<Integer> num) {
 		return new ArrayList<Integer>(new HashSet<Integer>(num));
 	}
 
-	public void addNumber(int value, int pos) {
-		player.set(pos, value);
-	}
-	
+	/**
+	 * Clears and reinitializes the ArrayLists
+	 */
 	public void clear() {
 		board = new ArrayList<Integer>(Collections.nCopies(81, 0));
 		player = new ArrayList<Integer>(Collections.nCopies(81, 0));
@@ -205,20 +396,38 @@ public class Sudoku {
 		}
 	}
 
+	/**
+	 * Method used for initial testing purposes, it fill up the ArrayList with
+	 * random numbers from 9 to 1 inclusively
+	 */
+	@SuppressWarnings("unused")
 	private void generateRandomBoard() {
 		for (int i = 0; i < board.size(); i++) {
 			board.set(i, generateRandom(9, 1));
 		}
 	}
 
+	/**
+	 * Generates a random integer number between the max and min parameter
+	 * inclusively
+	 * 
+	 * @param max
+	 *            an integer representing the maximum number of the range
+	 * @param min
+	 *            and integer representing the minimum number of the range
+	 * @return a random integer number
+	 */
 	private int generateRandom(int max, int min) {
 		return new Random().nextInt(max) + min;
 	}
 
-	private String printArrayList(ArrayList<Integer> num) {
-		return Arrays.deepToString(num.toArray());
-	}
-
+	/**
+	 * Creates a Sudoku board with the provided ArrayList
+	 * 
+	 * @param num
+	 *            ArrayList representing a Sudoku board
+	 * @return String representation of the Sudoku board
+	 */
 	public String printBoard(ArrayList<Integer> num) {
 		StringBuffer sb = new StringBuffer();
 
@@ -249,9 +458,14 @@ public class Sudoku {
 			sb.append(" ");
 		}
 
-		return sb.toString();		
+		return sb.toString();
 	}
-	
+
+	/**
+	 * Builds a String representation of the Sudoku board
+	 *
+	 * @return String representation of the Sudoku board
+	 */
 	public String toString() {
 		return printBoard(board);
 	}
