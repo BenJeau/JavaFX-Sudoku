@@ -26,6 +26,13 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * The class <b>Main</b> is a Sudoku game that can be played using a GUI
+ * provided by JavaFX.
+ * 
+ * @author Benoît
+ *
+ */
 public class Main extends Application {
 
 	private int value = 0;
