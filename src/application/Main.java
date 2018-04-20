@@ -29,6 +29,7 @@ import javafx.util.Duration;
 public class Main extends Application {
 
 	private int value = 0;
+	private long countDown = 0;
 
 	private BorderPane root;
 	private Scene scene;
@@ -49,18 +50,43 @@ public class Main extends Application {
 
 	private Stage stage;
 
+	/**
+	 * Changes the CSS ids of the horizontal line
+	 * 
+	 * @param array
+	 *            an Array of CSS ids
+	 * @param start
+	 *            the horizontal line number
+	 */
 	private void changeHorizontalIds(String[] array, int start) {
 		for (int i = start * 9; i < start * 9 + 9; i++) {
 			changeIdsHelper(array, i);
 		}
 	}
 
+	/**
+	 * Changes the CSS ids of the vertical line
+	 * 
+	 * @param array
+	 *            an Array of CSS ids
+	 * @param start
+	 *            the vertical line number
+	 */
 	private void changeVerticalIds(String[] array, int start) {
 		for (int i = start; i < start + 9 * 9; i += 9) {
 			changeIdsHelper(array, i);
 		}
 	}
 
+	/**
+	 * Changes the CSS ids of a specific Sudoku board element according to its
+	 * original state
+	 * 
+	 * @param array
+	 *            an Array of CSS ids
+	 * @param i
+	 *            the location of the button in the Sudoku board
+	 */
 	private void changeIdsHelper(String[] array, int i) {
 		if (!(boardText.get(i).getText()).equals(String.valueOf(value)) || value == 0) {
 			if (untouched.get(i) != 0) {
@@ -75,12 +101,16 @@ public class Main extends Application {
 		}
 	}
 
+	/**
+	 * Resets the game
+	 */
 	private void reset() {
+		// Removes every buttons (GridPane) inside the main GridPane
 		for (int i = 0; i < 9; i++) {
 			table.getChildren().remove(grid.get(i));
 		}
 
-		// 
+		// Creates a new Sudoku board for the player
 		sudoku.clear();
 		sudoku.generateBoard();
 		sudoku.generatePlayer();
@@ -91,12 +121,19 @@ public class Main extends Application {
 		// Get player's board
 		board = sudoku.getPlayer();
 
-		// List and maps of buttons, gridpanes and value of the board
+		// List and maps of Buttons, GridPanes and value of the board
 		untouched = new ArrayList<Integer>(board);
 		boardText = new HashMap<Integer, Button>();
 		grid = new HashMap<Integer, GridPane>();
 	}
 
+	/**
+	 * Returns the number of elements of the specified number
+	 * 
+	 * @param num
+	 *            the number researched
+	 * @return a number of elements equal to the parameter
+	 */
 	private int getNum(int num) {
 		int count = 0;
 		for (int p = 0; p < 81; p++) {
@@ -107,6 +144,9 @@ public class Main extends Application {
 		return count;
 	}
 
+	/**
+	 * Generates the board, in terms of GUI
+	 */
 	private void generateBoard() {
 		// Each block
 		for (int i = 0; i < 9; i++) {
@@ -218,8 +258,6 @@ public class Main extends Application {
 			}
 		}
 	}
-	
-	long countDown = 0;
 
 	private void startTimer() {
 		start = Calendar.getInstance().getTime();
@@ -249,7 +287,7 @@ public class Main extends Application {
 		scene = new Scene(root, 350, 450);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-		// Buttons and labels
+		// Buttons
 		clear = new Button("Clear");
 		clear.setOnAction(e -> {
 			board = new ArrayList<Integer>(untouched);
@@ -318,7 +356,6 @@ public class Main extends Application {
 
 		generateBoard();
 
-		//
 		for (int i = 0; i < 9; i++) {
 			numButtons.put(i, new Button());
 			numButtons.get(i).setText(String.valueOf(i + 1));
@@ -388,6 +425,9 @@ public class Main extends Application {
 		primaryStage.setMinWidth(primaryStage.getWidth());
 	}
 
+	/**
+	 * Main method for the Sudoku game
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
