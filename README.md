@@ -4,4 +4,4 @@ Sudoku game created using JavaFX. It also creates Sudoku boards using a backtrac
 ## Screenshots
 
 ![Board](https://raw.githubusercontent.com/BenJeau/JavaFX-Sudoku/master/screenshots/Board.PNG)
-![Play](https://raw.githubusercontent.com/BenJeau/JavaFX-Sudoku/master/screenshots/Play.PNG)
+![Play](https://raw.githubusercontent.com/BenJeau/JavaFX-Sudoku/master/screenshots/Play.png)
