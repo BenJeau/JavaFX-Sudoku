@@ -2,7 +2,7 @@
 Sudoku game created using JavaFX. It also creates Sudoku boards using a backtrack recursive algorithm.
 
 ## Usage
-If you only want to play the game, there is an executable .jar in which you can run or if you want to modify the code, the code is in [/src/application](JavaFX-Sudoku/tree/master/src/application).
+If you only want to play the game, there is an executable .jar in which you can run or if you want to modify the code, the code is in [/src/application](/src/application).
 
 ## Screenshots
 
