@@ -438,7 +438,7 @@ public class Main extends Application {
 
 		// Sets the scene to the BorderPane layout and links the CSS file
 		scene = new Scene(root, 350, 450);
-		scene.getStylesheets().add(getClass().getResource("resources/application.css").toExternalForm());
+		scene.getStylesheets().add("file:resources/application.css");
 
 		// Sets the stage, sets its title, displays it, and restricts its minimal size
 		primaryStage.setScene(scene);
