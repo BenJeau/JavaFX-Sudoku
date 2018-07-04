@@ -1,5 +1,3 @@
-package application;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,7 @@ import java.util.Scanner;
  * line/terminal by calling the method start(), but I mostly focused on an GUI
  * integration of this game in the Main class.
  * 
- * @author Benoît
+ * @author BenoÃ®t
  *
  */
 public class Sudoku {

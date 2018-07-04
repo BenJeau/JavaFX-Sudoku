@@ -1,5 +1,3 @@
-package application;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,13 +28,13 @@ import javafx.util.Duration;
  * The class <b>Main</b> is a Sudoku game that can be played using a GUI
  * provided by JavaFX.
  * 
- * @author Benoît
+ * @author BenoÃ®t
  *
  */
 public class Main extends Application {
 
 	private int value = 0;
-	private long countDown = 0;
+	private long countUp = 0;
 
 	private BorderPane root;
 	private Scene scene;
@@ -205,7 +203,7 @@ public class Main extends Application {
 								timeline.stop();
 
 								Alert alert = new Alert(AlertType.NONE,
-										"You just completed the sudoku board in " + countDown
+										"You just completed the sudoku board in " + countUp/1000
 												+ " seconds. Do you want to play again?",
 										ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
 								alert.showAndWait();
@@ -277,9 +275,9 @@ public class Main extends Application {
 	private void startTimer() {
 		start = Calendar.getInstance().getTime();
 		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-			countDown = Calendar.getInstance().getTime().getTime() - start.getTime();
+			countUp = Calendar.getInstance().getTime().getTime() - start.getTime();
 			stage.setTitle(
-					"Sudoku - Time: " + String.valueOf(TimeUnit.SECONDS.convert(countDown, TimeUnit.MILLISECONDS)));
+					"Sudoku - Time: " + String.valueOf(TimeUnit.SECONDS.convert(countUp, TimeUnit.MILLISECONDS)));
 		}));
 
 		timeline.setCycleCount(Animation.INDEFINITE);
@@ -358,7 +356,7 @@ public class Main extends Application {
 		System.out.println(sudoku.toString());
 
 		// Application icon
-		applicationIcon = new Image(getClass().getResourceAsStream("sudoku.png"));
+		applicationIcon = new Image("file:resources/sudoku.png");
 		primaryStage.getIcons().add(applicationIcon);
 
 		// Get player's board
@@ -440,7 +438,7 @@ public class Main extends Application {
 
 		// Sets the scene to the BorderPane layout and links the CSS file
 		scene = new Scene(root, 350, 450);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("resources/application.css").toExternalForm());
 
 		// Sets the stage, sets its title, displays it, and restricts its minimal size
 		primaryStage.setScene(scene);
